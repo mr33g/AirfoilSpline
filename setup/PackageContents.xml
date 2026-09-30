@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ApplicationPackage SchemaVersion="1.0" 
-                    AppVersion="1.0.0" 
-                    Author="Michael Reeg" 
-                    ProductCode="{9e7d3c2b-1a2b-4c3d-8e4f-5g6h7i8j9k0l}" 
-                    Name="AirfoilFitter" 
-                    Description="B-Spline Airfoil Fitter Add-in for Fusion"
+<ApplicationPackage SchemaVersion="1.0"
+                    AppVersion="1.0.0"
+                    Author="Michael Reeg"
+                    ProductCode="{04a83e63-f403-446a-9869-29a5e30cf272}"
+                    Name="AirfoilSpline"
+                    Description="AirfoilSpline parametric airfoil add-in for Fusion"
                     Icon="./Contents/img/favicon.ico">
     <Components>
         <RuntimeRequirements OS="Win64" Platform="Fusion360" />
-        <ComponentEntry AppName="AirfoilFitter" 
-                        ModuleName="./Contents/AirfoilFitter.manifest" 
-                        AppDescription="B-Spline Airfoil Fitter Add-in for Fusion"
+        <ComponentEntry AppName="AirfoilSpline"
+                        ModuleName="./Contents/AirfoilSpline.manifest"
+                        AppDescription="AirfoilSpline parametric airfoil add-in for Fusion"
                         Type="Component"
                         RunOnStartup="true" />
     </Components>

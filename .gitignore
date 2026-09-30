@@ -10,6 +10,10 @@ lib/
 doc/
 res/
 out/
-tests/
-.gitignore
 TODO.md
+
+__pycache__/
+*.egg-info/
+build/
+dist/
+.venv/

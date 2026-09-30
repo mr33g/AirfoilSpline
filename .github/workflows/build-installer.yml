@@ -67,8 +67,8 @@ jobs:
             python stage_for_build.py ".." $staging
             python generate_wxs_fragment.py --source-dir $staging --exclude-lib --output Files.wxs
 
-            $out = "AirfoilFitterAddin-${{ env.VERSION_NO_BUILD }}.msi"
-            wix build AirfoilFitterAddin.wxs Files.wxs `
+            $out = "AirfoilSpline-${{ env.VERSION_NO_BUILD }}.msi"
+            wix build AirfoilSplineAddin.wxs Files.wxs `
               -ext WixToolset.UI.wixext `
               -ext WixToolset.Util.wixext `
               -d Version=${{ env.VERSION }} `
@@ -81,13 +81,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-msi
-          path: setup/AirfoilFitterAddin-*.msi
+          path: setup/AirfoilSpline-*.msi
 
       - name: Upload Windows Release Asset
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: setup/AirfoilFitterAddin-${{ env.VERSION_NO_BUILD }}.msi
+          files: setup/AirfoilSpline-${{ env.VERSION_NO_BUILD }}.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -121,26 +121,26 @@ jobs:
           staging="$(mktemp -d)"
           python stage_for_build.py ".." "$staging"
 
-          mkdir "$staging/AirfoilFitter"
+          mkdir "$staging/AirfoilSpline"
           shopt -s dotglob
-          mv "$staging"/* "$staging/AirfoilFitter/" || true
+          mv "$staging"/* "$staging/AirfoilSpline/" || true
           shopt -u dotglob
 
-          mkdir -p "$staging/AirfoilFitter/lib"
+          mkdir -p "$staging/AirfoilSpline/lib"
           python -m pip install \
-            --target "$staging/AirfoilFitter/lib" \
+            --target "$staging/AirfoilSpline/lib" \
             -r ../requirements.txt \
             --no-compile \
             --no-cache-dir \
             --quiet
 
-          find "$staging/AirfoilFitter/lib" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-          find "$staging/AirfoilFitter/lib" -type f -name "*.pyc" -delete 2>/dev/null || true
-          find "$staging/AirfoilFitter/lib" -type f -name "*.pyo" -delete 2>/dev/null || true
+          find "$staging/AirfoilSpline/lib" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+          find "$staging/AirfoilSpline/lib" -type f -name "*.pyc" -delete 2>/dev/null || true
+          find "$staging/AirfoilSpline/lib" -type f -name "*.pyo" -delete 2>/dev/null || true
 
-          out="AirfoilFitterAddin-macos-${{ env.VERSION_NO_BUILD }}.zip"
+          out="AirfoilSpline-macos-${{ env.VERSION_NO_BUILD }}.zip"
           cd "$staging"
-          zip -r "$OLDPWD/$out" AirfoilFitter
+          zip -r "$OLDPWD/$out" AirfoilSpline
           cd "$OLDPWD"
           rm -rf "$staging"
 
@@ -148,12 +148,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-zip
-          path: setup/AirfoilFitterAddin-macos-*.zip
+          path: setup/AirfoilSpline-macos-*.zip
 
       - name: Upload macOS Release Asset
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: setup/AirfoilFitterAddin-macos-${{ env.VERSION_NO_BUILD }}.zip
+          files: setup/AirfoilSpline-macos-${{ env.VERSION_NO_BUILD }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

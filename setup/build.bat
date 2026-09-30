@@ -18,12 +18,12 @@ if "%VERSION%"=="" (
     set EFFECTIVE_VERSION=%VERSION%
     set VERSION_ARG=-d Version=%VERSION%
 )
-set OUTPUT_MSI=AirfoilFitterAddin-%EFFECTIVE_VERSION%.msi
+set OUTPUT_MSI=AirfoilSpline-%EFFECTIVE_VERSION%.msi
 
 set GENERATED_PACKAGE_XML=PackageContents.generated.xml
 set BACKUP_PACKAGE_XML=PackageContents.original.xml
-set GENERATED_MANIFEST=AirfoilFitter.generated.manifest
-set BACKUP_MANIFEST=AirfoilFitter.original.manifest
+set GENERATED_MANIFEST=AirfoilSpline.generated.manifest
+set BACKUP_MANIFEST=AirfoilSpline.original.manifest
 
 copy /y PackageContents.xml "%BACKUP_PACKAGE_XML%" >nul
 if errorlevel 1 (
@@ -31,7 +31,7 @@ if errorlevel 1 (
     goto :cleanup
 )
 
-copy /y ..\AirfoilFitter.manifest "%BACKUP_MANIFEST%" >nul
+copy /y ..\AirfoilSpline.manifest "%BACKUP_MANIFEST%" >nul
 if errorlevel 1 (
     set BUILD_RESULT=1
     goto :cleanup
@@ -43,7 +43,7 @@ if errorlevel 1 (
     goto :cleanup
 )
 
-python update_manifest_version.py --input ..\AirfoilFitter.manifest --output "%GENERATED_MANIFEST%" --version "%EFFECTIVE_VERSION%"
+python update_manifest_version.py --input ..\AirfoilSpline.manifest --output "%GENERATED_MANIFEST%" --version "%EFFECTIVE_VERSION%"
 if errorlevel 1 (
     set BUILD_RESULT=1
     goto :cleanup
@@ -55,7 +55,7 @@ if errorlevel 1 (
     goto :cleanup
 )
 
-copy /y "%GENERATED_MANIFEST%" ..\AirfoilFitter.manifest >nul
+copy /y "%GENERATED_MANIFEST%" ..\AirfoilSpline.manifest >nul
 if errorlevel 1 (
     set BUILD_RESULT=1
     goto :cleanup
@@ -67,7 +67,7 @@ if errorlevel 1 (
     goto :cleanup
 )
 
-wix build AirfoilFitterAddin.wxs Files.wxs -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext %VERSION_ARG% -o "%OUTPUT_MSI%"
+wix build AirfoilSplineAddin.wxs Files.wxs -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext %VERSION_ARG% -o "%OUTPUT_MSI%"
 if errorlevel 1 (
     set BUILD_RESULT=1
     goto :cleanup
@@ -78,7 +78,7 @@ echo Installer built successfully: %OUTPUT_MSI%
 
 :cleanup
 if exist "%BACKUP_PACKAGE_XML%" move /y "%BACKUP_PACKAGE_XML%" PackageContents.xml >nul
-if exist "%BACKUP_MANIFEST%" move /y "%BACKUP_MANIFEST%" ..\AirfoilFitter.manifest >nul
+if exist "%BACKUP_MANIFEST%" move /y "%BACKUP_MANIFEST%" ..\AirfoilSpline.manifest >nul
 if exist "%GENERATED_PACKAGE_XML%" del /q "%GENERATED_PACKAGE_XML%"
 if exist "%GENERATED_MANIFEST%" del /q "%GENERATED_MANIFEST%"
 exit /b %BUILD_RESULT%

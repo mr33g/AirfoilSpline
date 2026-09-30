@@ -31,11 +31,11 @@ def create_ui_inputs(inputs, smoothness_max=0.1):
         groupImportSettingsChildInputs = groupImportSettings.children
 
         # Rotation Button (Cycles 0, 90, 180, 270) - use rotate.svg icon
-        rotate = groupImportSettingsChildInputs.addBoolValueInput('rotate_airfoil', t("turn_90"), False, 'resources/AirfoilFitterCommand/rotate', False)
+        rotate = groupImportSettingsChildInputs.addBoolValueInput('rotate_airfoil', t("turn_90"), False, 'resources/AirfoilSplineCommand/rotate', False)
         rotate.isVisible = False
         
         # Flip Button (Reverses nose to tail orientation) - use flip.svg icon
-        flip = groupImportSettingsChildInputs.addBoolValueInput('flip_airfoil', t("flip"), False, 'resources/AirfoilFitterCommand/flip', False)
+        flip = groupImportSettingsChildInputs.addBoolValueInput('flip_airfoil', t("flip"), False, 'resources/AirfoilSplineCommand/flip', False)
         flip.isVisible = False
 
         # TE Thickness (Distance Manipulator)
@@ -55,7 +55,7 @@ def create_ui_inputs(inputs, smoothness_max=0.1):
         groupFitterSettingsChildInputs = groupFitterSettings.children
 
         # Reset row
-        reset_button = groupFitterSettingsChildInputs.addBoolValueInput('reset_button', t("reset"), False, 'resources/AirfoilFitterCommand/reset', False)
+        reset_button = groupFitterSettingsChildInputs.addBoolValueInput('reset_button', t("reset"), False, 'resources/AirfoilSplineCommand/reset', False)
         reset_button.isVisible = False
 
         initial_cp_count = groupFitterSettingsChildInputs.addIntegerSpinnerCommandInput(
@@ -64,10 +64,10 @@ def create_ui_inputs(inputs, smoothness_max=0.1):
         initial_cp_count.isVisible = False
         
         # Control Point Count (Integer Slider/Spinner)
-        cp_count_upper = groupFitterSettingsChildInputs.addBoolValueInput('cp_count_upper', t("cp_count_upper"), False, 'resources/AirfoilFitterCommand/add', False)
+        cp_count_upper = groupFitterSettingsChildInputs.addBoolValueInput('cp_count_upper', t("cp_count_upper"), False, 'resources/AirfoilSplineCommand/add', False)
         cp_count_upper.text = f'  {state.current_cp_count_upper if state.current_cp_count_upper is not None else config.DEFAULT_CP_COUNT}'
         cp_count_upper.isVisible = False
-        cp_count_lower = groupFitterSettingsChildInputs.addBoolValueInput('cp_count_lower', t("cp_count_lower"), False, 'resources/AirfoilFitterCommand/add', False)
+        cp_count_lower = groupFitterSettingsChildInputs.addBoolValueInput('cp_count_lower', t("cp_count_lower"), False, 'resources/AirfoilSplineCommand/add', False)
         cp_count_lower.text = f'  {state.current_cp_count_lower if state.current_cp_count_lower is not None else config.DEFAULT_CP_COUNT}'
         cp_count_lower.isVisible = False
 
@@ -86,7 +86,7 @@ def create_ui_inputs(inputs, smoothness_max=0.1):
         continuity_dropdown.isVisible = False
 
         # 5. Curvature Comb (Initially Hidden)
-        curvature_comb = inputs.addBoolValueInput('curvature_comb', t("curvature_comb"), True, 'resources/AirfoilFitterCommand/comb', False)
+        curvature_comb = inputs.addBoolValueInput('curvature_comb', t("curvature_comb"), True, 'resources/AirfoilSplineCommand/comb', False)
         curvature_comb.isVisible = False
         # Curvature Comb Settings (Initially Hidden)
         comb_scale = inputs.addFloatSliderCommandInput('comb_scale', t("comb_scale"), "", 0.0001, 0.05, False)

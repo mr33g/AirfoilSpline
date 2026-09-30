@@ -4,8 +4,8 @@ import traceback
 import adsk.core
 import adsk.fusion
 
-COMMAND_ID = 'AirfoilFitterRefreshChangedFeatures'
-EVENT_ID = 'AirfoilFitterDispatchChangedFeatures'
+COMMAND_ID = 'AirfoilSplineRefreshChangedFeatures'
+EVENT_ID = 'AirfoilSplineDispatchChangedFeatures'
 
 
 def is_history(command_id):
@@ -36,11 +36,11 @@ class DeferredUpdates:
         self.command = ui.commandDefinitions.itemById(COMMAND_ID)
         if not self.command:
             self.command = ui.commandDefinitions.addButtonDefinition(
-                COMMAND_ID, 'Refresh changed AirfoilFitter features', 'Apply queued airfoil updates')
+                COMMAND_ID, 'Refresh changed AirfoilSpline features', 'Apply queued airfoil updates')
         self.attach(self.command.commandCreated, Created(self))
         self.event = app.registerCustomEvent(EVENT_ID)
         if not self.event:
-            raise RuntimeError('Cannot register the AirfoilFitter deferred update event.')
+            raise RuntimeError('Cannot register the AirfoilSpline deferred update event.')
         self.attach(self.event, Dispatch(self))
         self.attach(ui.commandStarting, Starting(self))
         self.attach(ui.commandTerminated, Terminated(self))
@@ -139,7 +139,7 @@ class DeferredUpdates:
 
 
 def log_error():
-    adsk.core.Application.get().log('AirfoilFitter deferred update failed: ' + traceback.format_exc())
+    adsk.core.Application.get().log('AirfoilSpline deferred update failed: ' + traceback.format_exc())
 
 
 class Created(adsk.core.CommandCreatedEventHandler):
@@ -209,7 +209,7 @@ class Dispatch(adsk.core.CustomEventHandler):
             if not batch or adsk.core.Application.get().userInterface.activeCommand != 'SelectCommand':
                 return  # Never cancel/interfere with a user's active command.
             if not owner.command.execute():
-                raise RuntimeError('Cannot execute the AirfoilFitter refresh command.')
+                raise RuntimeError('Cannot execute the AirfoilSpline refresh command.')
         except Exception:
             owner.pending.clear()
             log_error()

@@ -99,7 +99,7 @@ def draw_control_polygon(graphics_group, upper_cp, lower_cp, chord_length,
     
     # Graphics only: touching the chord sketch invalidates dependent features.
     try:
-        point_image = os.path.join(_addin_dir, 'resources', 'AirfoilFitterCommand', 'raw', '8x8.png')
+        point_image = os.path.join(_addin_dir, 'resources', 'AirfoilSplineCommand', 'raw', '8x8.png')
         points = graphics_group.addPointSet(
             adsk.fusion.CustomGraphicsCoordinates.create(upper_coords + lower_coords), [],
             adsk.fusion.CustomGraphicsPointTypes.UserDefinedCustomGraphicsPointType, point_image)
@@ -336,7 +336,7 @@ def draw_error_markers(graphics_group, upper_cp, lower_cp, fit_cache,
     # Create CustomGraphicsPointSet
     cg_coords_points = adsk.fusion.CustomGraphicsCoordinates.create(error_points_coords)
     point_indices = [0, 1]
-    error_image_path = os.path.join(_addin_dir, 'resources', 'AirfoilFitterCommand', 'error', '12x12.png')
+    error_image_path = os.path.join(_addin_dir, 'resources', 'AirfoilSplineCommand', 'error', '12x12.png')
     point_type = adsk.fusion.CustomGraphicsPointTypes.PointCloudCustomGraphicsPointType
     cg_point_set = graphics_group.addPointSet(
         cg_coords_points, 
@@ -381,7 +381,7 @@ def draw_raw_data_points(graphics_group, chord_length, airfoil_to_world, target_
         # Create CustomGraphicsPointSet
         cg_coords_points_upper = adsk.fusion.CustomGraphicsCoordinates.create(upper_coords)
         cg_coords_points_lower = adsk.fusion.CustomGraphicsCoordinates.create(lower_coords)
-        raw_image_path = os.path.join(_addin_dir, 'resources', 'AirfoilFitterCommand', 'raw', '8x8.png')
+        raw_image_path = os.path.join(_addin_dir, 'resources', 'AirfoilSplineCommand', 'raw', '8x8.png')
         point_type = adsk.fusion.CustomGraphicsPointTypes.PointCloudCustomGraphicsPointType
         cg_point_set_upper = graphics_group.addPointSet(
             cg_coords_points_upper, 

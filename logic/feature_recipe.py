@@ -32,7 +32,7 @@ def encode(recipe):
 def decode(text):
     recipe = json.loads(text)
     if recipe.get('schema') != SCHEMA or not isinstance(recipe.get('dat'), str):
-        raise ValueError('Unsupported or missing AirfoilFitter feature data.')
+        raise ValueError('Unsupported or missing AirfoilSpline feature data.')
     return recipe
 
 

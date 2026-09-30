@@ -7,12 +7,12 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
      xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
-    <Package Name="Airfoil Fitter Add-in for Fusion" 
-             Manufacturer="Michael Reeg" 
-             Version="$(var.Version)" 
-             UpgradeCode="F0E1D2C3-B4A5-9687-7869-5A4B3C2D1E0F"
+    <Package Name="AirfoilSpline Add-in for Fusion"
+             Manufacturer="Michael Reeg"
+             Version="$(var.Version)"
+             UpgradeCode="9BFBAD03-1660-4623-B260-D14E575ED458"
              Scope="perMachine">
-        
+
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
         <MediaTemplate EmbedCab="yes" />
 
@@ -25,8 +25,8 @@
         <ui:WixUI Id="WixUI_Minimal" />
         <UIRef Id="WixUI_ErrorProgressText" />
         <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
-        
-        
+
+
         <!-- Check if Fusion is running and warn user -->
         <util:CloseApplication Id="CloseFusion360"
                                Target="Fusion360.exe"
@@ -35,22 +35,22 @@
                                Description="Fusion is currently running. Please close it before continuing to ensure all files can be removed properly." />
 
         <!-- Application Icon -->
-        <Icon Id="icon.ico" SourceFile="../resources/AirfoilFitterCommand/favicon.ico"/>
+        <Icon Id="icon.ico" SourceFile="../resources/AirfoilSplineCommand/favicon.ico"/>
         <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
         <!-- Properties for RemoveFolderEx - read paths from registry (set during install) -->
         <Property Id="INSTALLFOLDER_PATH" Secure="yes">
-            <RegistrySearch Id="FindInstallFolder" Root="HKCU" Key="Software\FusionAddins\AirfoilFitter" Name="InstallPath" Type="raw" />
+            <RegistrySearch Id="FindInstallFolder" Root="HKCU" Key="Software\FusionAddins\AirfoilSpline" Name="InstallPath" Type="raw" />
         </Property>
         <Property Id="CONTENTSFOLDER_PATH" Secure="yes">
-            <RegistrySearch Id="FindContentsFolder" Root="HKCU" Key="Software\FusionAddins\AirfoilFitter" Name="ContentsPath" Type="raw" />
+            <RegistrySearch Id="FindContentsFolder" Root="HKCU" Key="Software\FusionAddins\AirfoilSpline" Name="ContentsPath" Type="raw" />
         </Property>
 
         <!-- Directory Structure -->
         <StandardDirectory Id="AppDataFolder">
             <Directory Id="AutodeskDir" Name="Autodesk">
                 <Directory Id="ApplicationPluginsDir" Name="ApplicationPlugins">
-                    <Directory Id="INSTALLFOLDER" Name="AirfoilFitter.bundle">
+                    <Directory Id="INSTALLFOLDER" Name="AirfoilSpline.bundle">
                         <Directory Id="ContentsFolder" Name="Contents" />
                     </Directory>
                 </Directory>
@@ -59,24 +59,24 @@
 
         <!-- Components -->
         <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-            <Component Id="PackageContentsXml" Guid="B1C2D3E4-F5A6-7890-ABCD-EF1234567891">
+            <Component Id="PackageContentsXml" Guid="DCE99E2D-A6B5-480C-9CD3-43113E1970CE">
                 <File Id="PackageContents.xml" Name="PackageContents.xml" Source="$(var.PackageContentsSource)" KeyPath="yes" />
-                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilFitter" Name="installed" Type="integer" Value="1" Action="write" />
+                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilSpline" Name="installed" Type="integer" Value="1" Action="write" />
                 <!-- Store actual paths in registry for uninstall to find -->
-                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilFitter" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" Action="write" />
-                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilFitter" Name="ContentsPath" Type="string" Value="[ContentsFolder]" Action="write" />
+                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilSpline" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" Action="write" />
+                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilSpline" Name="ContentsPath" Type="string" Value="[ContentsFolder]" Action="write" />
                 <!-- RemoveFolderEx removes the folder and ALL contents including runtime-created files -->
                 <util:RemoveFolderEx Id="RemoveINSTALLFOLDER" On="uninstall" Property="INSTALLFOLDER_PATH" />
             </Component>
             <!-- Remove ContentsFolder on uninstall -->
-            <Component Id="ContentsFolderCleanup" Guid="A1B2C3D4-E5F6-7890-ABCD-EF1234567892" Directory="ContentsFolder">
-                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilFitter\Folders" Name="ContentsFolder" Type="integer" Value="1" Action="write" KeyPath="yes" />
+            <Component Id="ContentsFolderCleanup" Guid="325D58F2-6982-4A5C-A98D-524F10A7EB51" Directory="ContentsFolder">
+                <RegistryValue Root="HKCU" Key="Software\FusionAddins\AirfoilSpline\Folders" Name="ContentsFolder" Type="integer" Value="1" Action="write" KeyPath="yes" />
                 <util:RemoveFolderEx Id="RemoveContentsFolder" On="uninstall" Property="CONTENTSFOLDER_PATH" />
             </Component>
         </ComponentGroup>
 
         <!-- The actual add-in files are harvested into this group -->
-        <Feature Id="MainFeature" Title="Airfoil Fitter Add-in" Level="1">
+        <Feature Id="MainFeature" Title="AirfoilSpline Add-in" Level="1">
             <ComponentGroupRef Id="ProductComponents" />
             <ComponentGroupRef Id="HarvestedAddInFiles" />
         </Feature>

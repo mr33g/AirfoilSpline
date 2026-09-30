@@ -79,7 +79,7 @@ def reset_fitter_settings_to_defaults(inputs, resetAll=False):
     except Exception as e:
         pass
 
-class AirfoilFitterCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
+class AirfoilSplineCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
@@ -88,22 +88,22 @@ class AirfoilFitterCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             cmd = event_args.command
             cmd.setDialogSize(300, 0)
 
-            from AirfoilFitter import check_for_updates
+            from AirfoilSpline import check_for_updates
             check_for_updates(adsk.core.Application.get().userInterface)
 
-            on_execute = AirfoilFitterCommandExecuteHandler()
+            on_execute = AirfoilSplineCommandExecuteHandler()
             cmd.execute.add(on_execute)
             state.handlers.append(on_execute)
 
-            on_input_changed = AirfoilFitterCommandInputChangedHandler()
+            on_input_changed = AirfoilSplineCommandInputChangedHandler()
             cmd.inputChanged.add(on_input_changed)
             state.handlers.append(on_input_changed)
 
-            on_execute_preview = AirfoilFitterCommandExecutePreviewHandler()
+            on_execute_preview = AirfoilSplineCommandExecutePreviewHandler()
             cmd.executePreview.add(on_execute_preview)
             state.handlers.append(on_execute_preview)
 
-            on_destroy = AirfoilFitterCommandDestroyedHandler()
+            on_destroy = AirfoilSplineCommandDestroyedHandler()
             on_destroy.command_handlers = [on_execute, on_input_changed, on_execute_preview, on_destroy]
             cmd.destroy.add(on_destroy)
             state.handlers.append(on_destroy)
@@ -114,7 +114,7 @@ class AirfoilFitterCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             app = adsk.core.Application.get()
             app.userInterface.messageBox(t("command_created_failed", error=traceback.format_exc()))
 
-class AirfoilFitterCommandExecuteHandler(adsk.core.CommandEventHandler):
+class AirfoilSplineCommandExecuteHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
@@ -122,14 +122,14 @@ class AirfoilFitterCommandExecuteHandler(adsk.core.CommandEventHandler):
             event_args = adsk.core.CommandEventArgs.cast(args)
             if not run_fitter(event_args.command.commandInputs, False):
                 event_args.executeFailed = True
-                event_args.executeFailedMessage = 'AirfoilFitter creation failed. See Text Commands for details.'
+                event_args.executeFailedMessage = 'AirfoilSpline creation failed. See Text Commands for details.'
         except Exception as e:
             app = adsk.core.Application.get()
             args.executeFailed = True
             args.executeFailedMessage = str(e)
             app.userInterface.messageBox(t("execution_error", error=traceback.format_exc()))
 
-class AirfoilFitterCommandInputChangedHandler(adsk.core.InputChangedEventHandler):
+class AirfoilSplineCommandInputChangedHandler(adsk.core.InputChangedEventHandler):
     def __init__(self, preserve_fit_settings=False):
         super().__init__()
         self.preserve_fit_settings = preserve_fit_settings
@@ -300,7 +300,7 @@ class AirfoilFitterCommandInputChangedHandler(adsk.core.InputChangedEventHandler
         except Exception as e:
             pass
 
-class AirfoilFitterCommandExecutePreviewHandler(adsk.core.CommandEventHandler):
+class AirfoilSplineCommandExecutePreviewHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
@@ -312,7 +312,7 @@ class AirfoilFitterCommandExecutePreviewHandler(adsk.core.CommandEventHandler):
         except Exception as e:
             pass
 
-class AirfoilFitterCommandDestroyedHandler(adsk.core.CommandEventHandler):
+class AirfoilSplineCommandDestroyedHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):

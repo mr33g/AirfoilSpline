@@ -7,9 +7,9 @@ import urllib.request
 
 # Get the directory where this script is located
 addin_dir = os.path.dirname(__file__)
-manifest_path = os.path.join(addin_dir, 'AirfoilFitter.manifest')
-update_manifest_url = 'https://raw.githubusercontent.com/mr33g/AirfoilFitterFusionAddin/master/AirfoilFitter.manifest'
-app_store_url = 'https://apps.autodesk.com/FUSION/en/Detail/Index?id=7312110669169312529&appLang=en&os=Win64'
+manifest_path = os.path.join(addin_dir, 'AirfoilSpline.manifest')
+update_manifest_url = 'https://raw.githubusercontent.com/mr33g/AirfoilSpline/main/AirfoilSpline.manifest'
+app_store_url = 'https://apps.autodesk.com/FUSION/en/Detail/Index?id=5913630262916104681&appLang=en&os=Win32_64'
 _update_check_attempted = False
 
 # Add the add-in directory and bundled 'lib' to the path
@@ -111,10 +111,10 @@ def ensure_dependencies():
         t("deps_missing_title"),
         adsk.core.MessageBoxButtonTypes.YesNoButtonType
     )
-    
+
     if res == adsk.core.DialogResults.DialogNo:
         return False
-    
+
     try:
         import subprocess
         python_exe = sys.executable
@@ -134,16 +134,16 @@ def ensure_dependencies():
         install_cmd = pip_cmd
         if needs_pip_bootstrap:
             install_cmd = f'{bootstrap_pip_cmd} && {pip_cmd}'
-        
+
         if os.name == 'nt':
-            os.system(f'start "AirfoilFitter Dependency Installer" cmd /c "{install_cmd} & pause"')
+            os.system(f'start "AirfoilSpline Dependency Installer" cmd /c "{install_cmd} & pause"')
             ui.messageBox(t("deps_install_started"))
         else:
             if needs_pip_bootstrap:
                 subprocess.check_call([python_exe, '-m', 'ensurepip', '--upgrade'])
             subprocess.check_call([python_exe, '-m', 'pip', 'install', '--upgrade', '--force-reinstall', '--target', lib_dir, 'numpy', 'scipy'])
             ui.messageBox(t("deps_install_complete"))
-            
+
         return False
     except Exception as e:
         ui.messageBox(t("deps_install_failed", error=str(e)))
@@ -160,31 +160,31 @@ def run(context):
         #         debugpy.listen(('localhost', 5678), in_process_debug_adapter=True)
         #         ui.messageBox('Debug server ready on port 5678.\nAttach VSCode now, then click OK.')
         #     except Exception as e:
-        #         ui.messageBox(f'Debug setup warning: {str(e)}\nContinuing anyway...')        
-        
+        #         ui.messageBox(f'Debug setup warning: {str(e)}\nContinuing anyway...')
+
         if not ensure_dependencies():
             return
 
         # Import these here, after dependencies are checked and potentially installed
-        from ui.handlers import AirfoilFitterCommandCreatedHandler
+        from ui.handlers import AirfoilSplineCommandCreatedHandler
         from logic import custom_feature
         custom_feature.register(addin_dir)
 
         # 1. Create Command Definition
-        cmd_def = ui.commandDefinitions.itemById('AirfoilFitterCommand')
+        cmd_def = ui.commandDefinitions.itemById('AirfoilSplineCommand')
         if not cmd_def:
             # Use absolute path for resources to be safe
-            resource_path = os.path.join(addin_dir, 'resources', 'AirfoilFitterCommand')
+            resource_path = os.path.join(addin_dir, 'resources', 'AirfoilSplineCommand')
             cmd_def = ui.commandDefinitions.addButtonDefinition(
-                'AirfoilFitterCommand', 
+                'AirfoilSplineCommand',
                 t("cmd_button_name"),
                 t("cmd_button_desc"),
                 resource_path
             )
-            toolClip_path = os.path.join(addin_dir, 'resources', 'AirfoilFitterCommand', 'tooltip.png')
+            toolClip_path = os.path.join(addin_dir, 'resources', 'AirfoilSplineCommand', 'tooltip.png')
             cmd_def.toolClipFilename = toolClip_path
-        
-        on_command_created = AirfoilFitterCommandCreatedHandler()
+
+        on_command_created = AirfoilSplineCommandCreatedHandler()
         cmd_def.commandCreated.add(on_command_created)
         state.handlers.append(on_command_created)
 
@@ -201,7 +201,7 @@ def run(context):
                     for p_id in panel_ids:
                         panel = tab.toolbarPanels.itemById(p_id)
                         if panel:
-                            existing_control = panel.controls.itemById('AirfoilFitterCommand')
+                            existing_control = panel.controls.itemById('AirfoilSplineCommand')
                             if not existing_control:
                                 panel.controls.addCommand(cmd_def)
                             break # Found the panel, move to next workspace
@@ -214,7 +214,7 @@ def stop(context):
     try:
         app = adsk.core.Application.get()
         ui = app.userInterface
-        
+
         from logic import custom_feature
         custom_feature.stop()
 
@@ -230,12 +230,12 @@ def stop(context):
                     for p_id in panel_ids:
                         panel = tab.toolbarPanels.itemById(p_id)
                         if panel:
-                            control = panel.controls.itemById('AirfoilFitterCommand')
+                            control = panel.controls.itemById('AirfoilSplineCommand')
                             if control:
                                 control.deleteMe()
 
         # Delete command definition
-        cmd_def = ui.commandDefinitions.itemById('AirfoilFitterCommand')
+        cmd_def = ui.commandDefinitions.itemById('AirfoilSplineCommand')
         if cmd_def:
             cmd_def.deleteMe()
     except:

@@ -346,7 +346,7 @@ def run_fitter(inputs, is_preview, initialize_te=True):
             file_path = inputs.itemById('file_path').value
             sketch_name = os.path.splitext(os.path.basename(file_path))[0] if file_path else "Fitted Airfoil"
             if design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
-                raise RuntimeError('AirfoilFitter custom features require design history.')
+                raise RuntimeError('AirfoilSpline custom features require design history.')
             source_sketch = selected_line.parentSketch
             planes = source_sketch.parentComponent.constructionPlanes
             insertion = TimelineInsertion(design.timeline, planes)
@@ -386,11 +386,11 @@ def run_fitter(inputs, is_preview, initialize_te=True):
 
         return True
     except TimelineInsertionError as exc:
-        app.log(f'AirfoilFitter insertion failed: {traceback.format_exc()}')
+        app.log(f'AirfoilSpline insertion failed: {traceback.format_exc()}')
         app.userInterface.messageBox(str(exc))
         return False  # Execute handler sets executeFailed to abort the transaction.
     except AirfoilPlaneError as exc:
-        app.log(f"AirfoilFitter plane creation failed: {traceback.format_exc()}")
+        app.log(f"AirfoilSpline plane creation failed: {traceback.format_exc()}")
         app.userInterface.messageBox(t("failed_create_airfoil_plane", error=str(exc)))
         return False
     except:

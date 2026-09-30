@@ -163,6 +163,13 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 Michael Reeg
 
+## Releases
+
+Installers are built locally and submitted to Autodesk for review. Update the
+version in `AirfoilSpline.manifest` on `main` only after Autodesk makes the new
+installer available in the store; this is what notifies existing users.
+See [the local build and release instructions](setup/README_SETUP.md).
+
 ## Changelog
 
 ### Unreleased â€” parametric prototype

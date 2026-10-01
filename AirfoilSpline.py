@@ -16,6 +16,9 @@ _update_check_attempted = False
 if addin_dir not in sys.path:
     sys.path.insert(0, addin_dir)
 
+vendor_dir = os.path.join(addin_dir, '_vendor')
+if vendor_dir not in sys.path:
+    sys.path.insert(0, vendor_dir)
 lib_dir = os.path.join(addin_dir, 'lib')
 if lib_dir not in sys.path:
     sys.path.insert(0, lib_dir)

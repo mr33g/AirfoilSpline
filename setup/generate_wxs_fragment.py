@@ -7,6 +7,10 @@ from xml.dom import minidom
 
 # Directories to exclude from the installer (don't install files from these)
 BASE_EXCLUDED_DIRS = {
+    'tests',
+    'build',
+    'dist',
+    '.venv',
     'setup',        # Don't include the setup folder (contains MSI, build artifacts)
     '.git',         # Don't include git repository
     '.vscode',      # Don't include VS Code settings

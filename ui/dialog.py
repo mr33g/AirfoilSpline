@@ -2,7 +2,7 @@ import adsk.core, adsk.fusion
 import traceback
 import os
 from logic import state
-from core import config
+import airfoil_spline_settings as config
 from utils.i18n import t
 
 def create_ui_inputs(inputs, smoothness_max=0.1):
@@ -59,7 +59,7 @@ def create_ui_inputs(inputs, smoothness_max=0.1):
         reset_button.isVisible = False
 
         initial_cp_count = groupFitterSettingsChildInputs.addIntegerSpinnerCommandInput(
-            'initial_cp_count', t("initial_cp_count"), 5, 12, 1, config.DEFAULT_CP_COUNT
+            'initial_cp_count', t("initial_cp_count"), config.INITIAL_CP_MIN, config.INITIAL_CP_MAX, 1, config.DEFAULT_CP_COUNT
         )
         initial_cp_count.isVisible = False
         
@@ -82,7 +82,7 @@ def create_ui_inputs(inputs, smoothness_max=0.1):
         continuity_dropdown.listItems.add('G1', False)
         continuity_dropdown.listItems.add('G2', False)
         continuity_dropdown.listItems.add('G3', False)
-        continuity_dropdown.listItems[1].isSelected = True  # G2 selected by default
+        continuity_dropdown.listItems[config.DEFAULT_CONTINUITY - 1].isSelected = True
         continuity_dropdown.isVisible = False
 
         # 5. Curvature Comb (Initially Hidden)

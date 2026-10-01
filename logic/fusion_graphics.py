@@ -7,7 +7,7 @@ computing spline normals, and creating text labels in Fusion's coordinate system
 
 import adsk.core, adsk.fusion
 import numpy as np
-from utils import bspline_helper
+from airfoil_fit import bspline_helper
 from logic import state
 
 

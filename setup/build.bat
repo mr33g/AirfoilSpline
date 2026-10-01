@@ -61,6 +61,12 @@ if errorlevel 1 (
     goto :cleanup
 )
 
+python prepare_core.py
+if errorlevel 1 (
+    set BUILD_RESULT=1
+    goto :cleanup
+)
+
 python generate_wxs_fragment.py --exclude-lib --output Files.wxs
 if errorlevel 1 (
     set BUILD_RESULT=1

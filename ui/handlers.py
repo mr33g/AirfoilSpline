@@ -5,7 +5,7 @@ import os
 from ui.dialog import create_ui_inputs
 from logic import state
 from logic.fitter import run_fitter
-from core import config
+import airfoil_spline_settings as config
 from utils.i18n import t
 
 def _set_selected_file_button_text(inputs, file_path: str) -> None:
@@ -21,20 +21,26 @@ def _set_selected_file_button_text(inputs, file_path: str) -> None:
         pass
 
 
-def update_cp_count_labels(inputs):
-    """Update the labels for CP count controls with current values."""
-    try:
-        cp_count_upper = inputs.itemById('cp_count_upper')
-        if cp_count_upper:
-            current_count = state.current_cp_count_upper if state.current_cp_count_upper is not None else get_initial_cp_count(inputs)
-            cp_count_upper.text = f'  {current_count}'
+_updating_cp_labels = False
 
-        cp_count_lower = inputs.itemById('cp_count_lower')
-        if cp_count_lower:
-            current_count = state.current_cp_count_lower if state.current_cp_count_lower is not None else get_initial_cp_count(inputs)
-            cp_count_lower.text = f'  {current_count}'
-    except Exception as e:
-        pass
+
+def update_cp_count_labels(inputs):
+    """Refresh labels without treating programmatic changes as button clicks."""
+    global _updating_cp_labels
+    if _updating_cp_labels:
+        return
+    _updating_cp_labels = True
+    try:
+        for surface in ('upper', 'lower'):
+            button = inputs.itemById('cp_count_' + surface)
+            if button:
+                count = getattr(state, 'current_cp_count_' + surface)
+                text = f'  {count if count is not None else get_initial_cp_count(inputs)}'
+                if button.text != text:
+                    button.text = text
+    finally:
+        _updating_cp_labels = False
+
 
 def get_initial_cp_count(inputs):
     """Return the selected initial control point count."""
@@ -42,9 +48,9 @@ def get_initial_cp_count(inputs):
         initial_cp_count = inputs.itemById('initial_cp_count')
         if initial_cp_count:
             if hasattr(initial_cp_count, 'value'):
-                return max(4, min(19, int(initial_cp_count.value)))
+                return max(config.MIN_CP_COUNT, min(config.MAX_CP_COUNT, int(initial_cp_count.value)))
             if initial_cp_count.selectedItem:
-                return max(4, min(19, int(initial_cp_count.selectedItem.name)))
+                return max(config.MIN_CP_COUNT, min(config.MAX_CP_COUNT, int(initial_cp_count.selectedItem.name)))
     except Exception:
         pass
     return config.DEFAULT_CP_COUNT
@@ -70,11 +76,11 @@ def reset_fitter_settings_to_defaults(inputs, resetAll=False):
             if smoothness:
                 smoothness.valueOne = config.DEFAULT_SMOOTHNESS_PENALTY
 
-            # Reset continuity level to G1 (first item)
+            # Reset to the application continuity default
             continuity_dropdown = inputs.itemById('continuity_level')
             if continuity_dropdown:
                 for i in range(continuity_dropdown.listItems.count):
-                    continuity_dropdown.listItems.item(i).isSelected = (i == 1)
+                    continuity_dropdown.listItems.item(i).isSelected = (i == config.DEFAULT_CONTINUITY - 1)
 
     except Exception as e:
         pass
@@ -152,6 +158,12 @@ class AirfoilSplineCommandInputChangedHandler(adsk.core.InputChangedEventHandler
 
                 changed_id = event_args.input.id
 
+            if _updating_cp_labels:
+                return
+            if changed_id == 'initial_cp_count':
+                # This is the count to use on the next Reset, not a fit request.
+                return
+
             if changed_id == 'select_file':
                 ui = adsk.core.Application.get().userInterface
                 dlg = ui.createFileDialog()
@@ -191,10 +203,10 @@ class AirfoilSplineCommandInputChangedHandler(adsk.core.InputChangedEventHandler
 
                 # Correct CP count values before triggering refit
                 if changed_id =='cp_count_upper' and state.current_cp_count_upper is not None:
-                    state.current_cp_count_upper = min(19, state.current_cp_count_upper + 1)
+                    state.current_cp_count_upper = min(config.MAX_CP_COUNT, state.current_cp_count_upper + 1)
                     update_cp_count_labels(inputs)
                 elif changed_id =='cp_count_lower' and state.current_cp_count_lower is not None:
-                    state.current_cp_count_lower = min(19, state.current_cp_count_lower + 1)
+                    state.current_cp_count_lower = min(config.MAX_CP_COUNT, state.current_cp_count_lower + 1)
                     update_cp_count_labels(inputs)
 
                 state.needs_refit = True
@@ -214,7 +226,7 @@ class AirfoilSplineCommandInputChangedHandler(adsk.core.InputChangedEventHandler
                 if comb_density_item:
                     comb_density_item.isVisible = comb_checked
 
-            elif changed_id in ('reset_button', 'initial_cp_count'):
+            elif changed_id == 'reset_button':
                 reset_fitter_settings_to_defaults(inputs, False)
                 state.needs_refit = True
 

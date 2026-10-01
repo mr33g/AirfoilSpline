@@ -17,3 +17,6 @@ __pycache__/
 build/
 dist/
 .venv/
+
+# Generated from the local shared core package
+_vendor/

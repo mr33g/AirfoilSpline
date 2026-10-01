@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 from scipy import interpolate, special  # Load extensions before temporary sys.modules patches.
-from utils import bspline_helper
+from airfoil_fit import bspline_helper
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -174,6 +174,90 @@ class RecipeTests(unittest.TestCase):
             self.recipe.fit(dict(recipe, dat=self.dat.replace('NACA 0012', 'Renamed')), self.values, 10)
             self.assertEqual(processor.call_count, 7)
         self.assertEqual(self.recipe._fit_cached.cache_info().maxsize, 64)
+
+    def test_common_fit_data_matches_recompute_without_file_io(self):
+        self.recipe._load_source.cache_clear()
+        self.recipe._fit_cached.cache_clear()
+        recipe = dict(dat=self.dat, schema=1)
+        for continuity in (1, 2, 3):
+            values = dict(self.values, upper_count=7, lower_count=9, continuity=continuity)
+            with patch('builtins.open', side_effect=AssertionError('Embedded fit must stay in memory')):
+                preview = self.recipe.fit_data(recipe, values, 10)
+                geometry = self.recipe.fit(recipe, values, 10)
+            self.assertEqual((preview['degree_u'], preview['degree_l']), (6, 8))
+            self.assertEqual(preview['fit_result'].achieved_continuity, continuity)
+            np.testing.assert_array_equal(preview['upper_cp_raw'], geometry[0])
+            np.testing.assert_array_equal(preview['lower_cp_raw'], geometry[3])
+            preview['upper_cp_raw'][:] = 123
+            np.testing.assert_array_equal(self.recipe.fit(recipe, values, 10)[0], geometry[0])
+
+    def test_failed_fit_is_rejected_and_not_cached(self):
+        from airfoil_fit import FitResult
+        self.recipe._fit_cached.cache_clear()
+        recipe = dict(dat=self.dat, schema=1)
+        failed = FitResult(False, 2, None, 'Iteration limit')
+        values = dict(self.values, continuity=2)
+        with patch.object(self.recipe.BSplineProcessor, 'fit_bspline', return_value=failed):
+            with self.assertRaisesRegex(self.recipe.AirfoilFitError, 'G2.*Iteration limit'):
+                self.recipe.fit(recipe, values, 10)
+        self.assertEqual(self.recipe._fit_cached.cache_info().currsize, 0)
+        self.assertEqual(self.recipe.fit(recipe, values, 10)[0].shape, (8, 2))
+
+
+class FitPreviewIntegrationTests(unittest.TestCase):
+    def test_preview_calls_common_fitter_and_preserves_cache_on_failure(self):
+        from logic import feature_recipe
+        feature_recipe._fit_cached.cache_clear()
+        adsk = api_stub()
+        app = NS(log=Mock(), userInterface=NS(messageBox=Mock()),
+                 activeProduct=NS(unitsManager=NS(defaultLengthUnits='mm')))
+        adsk.core.Application = NS(get=lambda: app)
+        adsk.core.Vector3D = NS(create=lambda *args: NS())
+        adsk.fusion.Design = NS(cast=lambda obj: obj)
+        state = NS(preview_graphics=None, needs_refit=True, fit_cache={}, rotation_state=0,
+                   flip_orientation=False, current_cp_count_upper=7, current_cp_count_lower=9)
+        logic = ModuleType('logic')
+        logic.state, logic.feature_recipe, logic.custom_feature = state, feature_recipe, NS()
+        render = Mock()
+        line = NS(parentSketch=NS())
+        controls = dict(chord_line=NS(selectionCount=1, selection=lambda _: NS(entity=line)),
+                        te_thickness=NS(value=.02), smoothness_input=NS(valueOne=.001),
+                        continuity_level=NS(selectedItem=NS(name='G2')),
+                        initial_cp_count=NS(value=10))
+        modules = {
+            'adsk': adsk, 'adsk.core': adsk.core, 'adsk.fusion': adsk.fusion, 'logic': logic,
+            'logic.airfoil_frame': NS(chord_frame=lambda *args: (NS(getCell=lambda *args: 0), 10)),
+            'logic.timeline_insertion': NS(TimelineInsertion=Mock(), TimelineInsertionError=RuntimeError),
+            'logic.preview_renderer': NS(render_preview=render),
+            'utils.fusion_geometry_helper': NS(create_fusion_spline=Mock()),
+            'utils.sketch_plane_helper': NS(AirfoilPlaneError=ValueError, resolve_airfoil_plane=Mock(), add_airfoil_sketch=Mock()),
+        }
+        module = load('preview_fit_integration', 'logic/fitter.py', modules)
+        x = (1 - np.cos(np.linspace(0, np.pi, 61))) / 2
+        y = .6 * (.2969*np.sqrt(x)-.126*x-.3516*x*x+.2843*x**3-.1036*x**4)
+        points = list(zip(x[::-1], y[::-1])) + list(zip(x[1:], -y[1:]))
+        dat = 'foil\n' + '\n'.join(f'{a:.12f} {b:.12f}' for a,b in points)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'foil.dat'
+            path.write_text(dat)
+            controls['file_path'] = NS(value=str(path))
+            inputs = NS(itemById=controls.get)
+            with patch.object(feature_recipe, 'fit_data', wraps=feature_recipe.fit_data) as shared:
+                self.assertTrue(module.run_fitter(inputs, True, initialize_te=False))
+                shared.assert_called_once()
+            render.assert_called_once()
+            geometry = feature_recipe.fit(dict(dat=dat), dict(te=.02, smoothness=.001,
+                                          upper_count=7, lower_count=9, continuity=2), 10)
+            np.testing.assert_array_equal(state.fit_cache['upper_cp_raw'], geometry[0])
+            previous = state.fit_cache
+            state.needs_refit = True
+            render.reset_mock()
+            with patch.object(feature_recipe, 'fit_data', side_effect=feature_recipe.AirfoilFitError('G2 failed')):
+                self.assertFalse(module.run_fitter(inputs, True, initialize_te=False))
+            render.assert_not_called()
+            self.assertIs(state.fit_cache, previous)
+            self.assertTrue(state.needs_refit)
+            app.log.assert_called_with('G2 failed')
 
 
 class PreviewTests(unittest.TestCase):

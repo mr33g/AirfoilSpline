@@ -10,7 +10,7 @@ import os
 import numpy as np
 from scipy import interpolate
 from logic import state
-from utils import bspline_helper
+from airfoil_fit import bspline_helper
 from logic.fusion_graphics import draw_error_labels
 
 _addin_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -171,7 +171,7 @@ def draw_curvature_comb(graphics_group, upper_cp, lower_cp, fit_cache,
         return
     
     try:
-        # Recreate BSpline curves from current control points (includes TE thickening if applied)
+        # Recreate BSpline curves from current control points
         upper_curve = interpolate.BSpline(
             fit_cache['upper_knots'],
             upper_cp,
@@ -285,7 +285,7 @@ def draw_error_markers(graphics_group, upper_cp, lower_cp, fit_cache,
     
     error_points_coords = []
     
-    # Recreate splines from current control points (which may include TE thickening)
+    # Recreate splines from current control points
     upper_curve_current = interpolate.BSpline(
         fit_cache['upper_knots'],
         upper_cp,

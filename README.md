@@ -163,13 +163,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 Michael Reeg
 
-## Releases
-
-Installers are built locally and submitted to Autodesk for review. Update the
-version in `AirfoilSpline.manifest` on `main` only after Autodesk makes the new
-installer available in the store; this is what notifies existing users.
-See [the local build and release instructions](setup/README_SETUP.md).
-
 ## Changelog
 
 ### Unreleased â€” parametric prototype
@@ -243,7 +236,14 @@ See [the local build and release instructions](setup/README_SETUP.md).
 ## Shared fitting library
 
 The shared headless library is being extracted in
-[AirfoilFitCore](https://github.com/mr33g/AirfoilFitCore).
+AirfoilFit (the sibling local project).
 This initial repository split preserves the tested local fitting implementation.
 Consumer migration and pinned wheel packaging follow numerical parity checks;
 see the library migration document for the four planned consumers.
+
+## Local shared core
+
+The fitting implementation lives in the sibling `AirfoilFit` project. Run
+`python setup/prepare_core.py` to bundle it into the ignored `_vendor` directory
+for Fusion. The installer build runs this step automatically. For offline tests,
+set `PYTHONPATH` to `../AirfoilFit/src` or install that local package first.

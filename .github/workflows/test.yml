@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: mr33g/AirfoilFit
-          ref: 738fd73da9480369df3e8504a0630773af8f8264
+          ref: 7958b391b994f6b4f1210665e3e6e5e38671237c
           token: ${{ secrets.AIRFOILFIT_READ_TOKEN }}
           persist-credentials: false
           path: AirfoilFit

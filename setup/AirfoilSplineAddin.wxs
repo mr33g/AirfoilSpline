@@ -16,6 +16,37 @@
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
         <MediaTemplate EmbedCab="yes" />
 
+        <!-- Detect only: never remove AF as part of an AS upgrade. -->
+        <Upgrade Id="F0E1D2C3-B4A5-9687-7869-5A4B3C2D1E0F">
+            <UpgradeVersion Minimum="0.0.0" IncludeMinimum="yes"
+                            OnlyDetect="yes" Property="LEGACY_AF_MSI" />
+        </Upgrade>
+        <!-- Also find App Store bundles and standard manual installations. -->
+        <Property Id="LEGACY_AF_USER_BUNDLE" Secure="yes">
+            <DirectorySearch Id="FindLEGACY_AF_USER_BUNDLE" Path="[AppDataFolder]Autodesk\ApplicationPlugins\AirfoilFitter.bundle\Contents" Depth="0">
+                <FileSearch Id="FileLEGACY_AF_USER_BUNDLE" Name="AirfoilFitter.py" />
+            </DirectorySearch>
+        </Property>
+        <Property Id="LEGACY_AF_MACHINE_BUNDLE" Secure="yes">
+            <DirectorySearch Id="FindLEGACY_AF_MACHINE_BUNDLE" Path="[CommonAppDataFolder]Autodesk\ApplicationPlugins\AirfoilFitter.bundle\Contents" Depth="0">
+                <FileSearch Id="FileLEGACY_AF_MACHINE_BUNDLE" Name="AirfoilFitter.py" />
+            </DirectorySearch>
+        </Property>
+        <Property Id="LEGACY_AF_MANUAL" Secure="yes">
+            <DirectorySearch Id="FindLEGACY_AF_MANUAL" Path="[AppDataFolder]Autodesk\Autodesk Fusion 360\API\AddIns\AirfoilFitter" Depth="0">
+                <FileSearch Id="FileLEGACY_AF_MANUAL" Name="AirfoilFitter.py" />
+            </DirectorySearch>
+        </Property>
+        <Property Id="LEGACY_AF_MANUAL_FUSION" Secure="yes">
+            <DirectorySearch Id="FindLEGACY_AF_MANUAL_FUSION" Path="[AppDataFolder]Autodesk\Autodesk Fusion\API\AddIns\AirfoilFitter" Depth="0">
+                <FileSearch Id="FileLEGACY_AF_MANUAL_FUSION" Name="AirfoilFitter.py" />
+            </DirectorySearch>
+        </Property>
+        <!-- Uninstall must remain possible even if AF was installed afterwards. -->
+        <Launch Condition='REMOVE~="ALL" OR NOT (LEGACY_AF_MSI OR LEGACY_AF_USER_BUNDLE OR LEGACY_AF_MACHINE_BUNDLE OR LEGACY_AF_MANUAL OR LEGACY_AF_MANUAL_FUSION)'
+                Message="Legacy Airfoil Fitter (AF) is installed. AirfoilSpline (AS) cannot coexist with it. Please uninstall Airfoil Fitter through Windows Settings > Apps, then run this installer again. For a manual installation, remove the legacy add-in from Fusion and its installation folder first." />
+
+
         <!-- Disable rollback to avoid Windows permission issues with \config.msi on non-C: drives -->
         <InstallExecuteSequence>
             <DisableRollback After="InstallInitialize" />

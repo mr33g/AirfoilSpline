@@ -130,11 +130,10 @@ def run_fitter(inputs, is_preview, initialize_te=True):
         else:
             file_path = inputs.itemById('file_path').value
             sketch_name = os.path.splitext(os.path.basename(file_path))[0] if file_path else "Fitted Airfoil"
-            if design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
-                raise RuntimeError('AirfoilSpline custom features require design history.')
+            is_parametric = design.designType == adsk.fusion.DesignTypes.ParametricDesignType
             source_sketch = selected_line.parentSketch
             planes = source_sketch.parentComponent.constructionPlanes
-            insertion = TimelineInsertion(design.timeline, planes)
+            insertion = TimelineInsertion(design.timeline, planes) if is_parametric else None
             # Track newly created supports explicitly; existing support geometry
             # must never become part of the AF-owned group.
             normal_world = adsk.core.Vector3D.create(
@@ -143,11 +142,13 @@ def run_fitter(inputs, is_preview, initialize_te=True):
             target_plane = resolve_airfoil_plane(
                 selected_line, state.rotation_state, selected_line.startSketchPoint.worldGeometry,
                 normal_world, design.rootComponent, sketch_name)
-            insertion.place_new_planes(planes)
+            if insertion is not None:
+                insertion.place_new_planes(planes)
             target_sketch = add_airfoil_sketch(source_sketch, target_plane, sketch_name)
             # Sketch creation may create an additional fallback support plane.
-            insertion.place_new_planes(planes)
-            output_position = insertion.place(target_sketch, 'output sketch')
+            if insertion is not None:
+                insertion.place_new_planes(planes)
+                output_position = insertion.place(target_sketch, 'output sketch')
             target_sketch.is3D = True
             u_final = transform_pts(upper_cp, target_sketch)
             l_final = transform_pts(lower_cp, target_sketch)
@@ -155,19 +156,22 @@ def run_fitter(inputs, is_preview, initialize_te=True):
                 state.fit_cache['upper_knots'], state.fit_cache['degree_u'])
             lower = create_fusion_spline(target_sketch, l_final,
                 state.fit_cache['lower_knots'], state.fit_cache['degree_l'])
-            custom_feature.tag(upper, 'upper')
-            custom_feature.tag(lower, 'lower')
+            if is_parametric:
+                custom_feature.tag(upper, 'upper')
+                custom_feature.tag(lower, 'lower')
             u_end = adsk.core.Point3D.create(*u_final[-1])
             l_end = adsk.core.Point3D.create(*l_final[-1])
             if u_end.distanceTo(l_end) > 1e-7:
-                custom_feature.tag(target_sketch.sketchCurves.sketchLines.addByTwoPoints(
-                    u_end, l_end), 'trailing')
-            group_position = (insertion.created_planes[0].timelineObject.index
-                              if insertion.created_planes else output_position)
-            feature = custom_feature.wrap(target_sketch, selected_line,
-                                inputs, state.fit_cache, state.rotation_state, state.flip_orientation,
-                                supports=insertion.created_planes)
-            insertion.place(feature, 'feature', position=group_position)
+                trailing = target_sketch.sketchCurves.sketchLines.addByTwoPoints(u_end, l_end)
+                if is_parametric:
+                    custom_feature.tag(trailing, 'trailing')
+            if is_parametric:
+                group_position = (insertion.created_planes[0].timelineObject.index
+                                  if insertion.created_planes else output_position)
+                feature = custom_feature.wrap(target_sketch, selected_line,
+                                    inputs, state.fit_cache, state.rotation_state, state.flip_orientation,
+                                    supports=insertion.created_planes)
+                insertion.place(feature, 'feature', position=group_position)
 
         return True
     except feature_recipe.AirfoilFitError as exc:

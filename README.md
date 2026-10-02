@@ -14,7 +14,10 @@ The feature embeds the source `.dat` contents in the design. Moving or deleting
 the original file does not remove that data; editing the file externally does
 not automatically update the feature. Select the changed file in Edit Feature
 to use it. Keep the add-in installed and running to edit or recompute these
-custom features. Design history must be enabled.
+custom features. Design history must be enabled for parametric features.
+
+With design history disabled, the same fitting controls create an ordinary
+sketch with fixed splines and a trailing-edge closing line when needed.
 
 Previously inserted airfoils remain ordinary sketches. Installing this version
 does not convert them into editable AirfoilSpline timeline features.
@@ -26,6 +29,10 @@ for the legacy Airfoil Fitter release:
 https://apps.autodesk.com/FUSION/en/Detail/Index?id=7312110669169312529&appLang=en&os=Win64
 
 ### MSI Installer (Windows)
+
+Uninstall legacy Airfoil Fitter (AF) before installing AirfoilSpline (AS). The
+installer checks for AF and asks you to remove it first because the two add-ins
+cannot be used together.
 
 - **File**: `AirfoilSpline-<version>.msi`
 1. Close Fusion

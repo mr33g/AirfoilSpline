@@ -4,7 +4,7 @@
 	"id":	"04a83e63-f403-446a-9869-29a5e30cf272",
 	"author":	"Michael Reeg",
 	"description": "AirfoilSpline parametric airfoil add-in for Fusion",
-	"version":	"1.2.0",
+	"version":	"1.0.0",
 	"runOnStartup":	true,
 	"supportedOS":	"windows|mac",
 	"editEnabled":	true

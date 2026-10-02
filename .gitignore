@@ -11,6 +11,7 @@ doc/
 res/
 out/
 TODO.md
+tests/fusion/
 
 __pycache__/
 *.egg-info/

@@ -28,7 +28,13 @@ The WiX source is `AirfoilSplineAddin.wxs`.
 
 Close Fusion before installing or uninstalling. Uninstall an existing AirfoilSpline version
 through Windows Settings > Apps before manually installing the new package.
-Airfoil Fitter is a separate application and does not need to be uninstalled.
+Uninstall legacy Airfoil Fitter (AF) before installing AirfoilSpline (AS).
+The installer blocks installation when it detects the legacy MSI, an AirfoilFitter
+bundle in the user or machine ApplicationPlugins folder, or a manual installation
+in the standard Fusion API AddIns folder. It asks the user to uninstall AF first;
+it never removes AF automatically. AS removal remains available if AF is present.
+Copies registered from arbitrary development folders cannot be detected by these
+searches and must also be removed from Fusion before using AS.
 To remove AirfoilSpline, use Installed Apps or run its MSI again.
 
 ## Separate application identity

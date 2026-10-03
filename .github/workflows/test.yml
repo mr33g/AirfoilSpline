@@ -13,7 +13,6 @@ jobs:
         with:
           repository: mr33g/airfoil-splines-core
           ref: main
-          token: ${{ secrets.AIRFOILFIT_READ_TOKEN }}
           persist-credentials: false
           path: airfoil-splines-core
       - uses: actions/setup-python@v5

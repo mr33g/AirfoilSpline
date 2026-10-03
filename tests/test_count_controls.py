@@ -17,7 +17,7 @@ class CountControlsTests(unittest.TestCase):
             'adsk': adsk, 'adsk.core': adsk.core, 'adsk.fusion': adsk.fusion,
             'logic': logic, 'logic.fitter': NS(run_fitter=Mock()),
             'ui.dialog': NS(create_ui_inputs=Mock())})
-        self.handler = self.module.AirfoilSplineCommandInputChangedHandler()
+        self.handler = self.module.AirfoilSplinesCommandInputChangedHandler()
         self.controls = dict(initial_cp_count=NS(value=6), chord_line=NS(selectionCount=1),
                              file_path=NS(value='foil.dat'))
         self.inputs = NS(itemById=self.controls.get)

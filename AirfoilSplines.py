@@ -7,8 +7,8 @@ import urllib.request
 
 # Get the directory where this script is located
 addin_dir = os.path.dirname(__file__)
-manifest_path = os.path.join(addin_dir, 'AirfoilSpline.manifest')
-update_manifest_url = 'https://raw.githubusercontent.com/mr33g/AirfoilSpline/main/AirfoilSpline.manifest'
+manifest_path = os.path.join(addin_dir, 'AirfoilSplines.manifest')
+update_manifest_url = 'https://raw.githubusercontent.com/mr33g/airfoil-splines-for-fusion/main/AirfoilSplines.manifest'
 app_store_url = 'https://apps.autodesk.com/FUSION/en/Detail/Index?id=5913630262916104681&appLang=en&os=Win32_64'
 _update_check_attempted = False
 
@@ -139,7 +139,7 @@ def ensure_dependencies():
             install_cmd = f'{bootstrap_pip_cmd} && {pip_cmd}'
 
         if os.name == 'nt':
-            os.system(f'start "AirfoilSpline Dependency Installer" cmd /c "{install_cmd} & pause"')
+            os.system(f'start "AirfoilSplines Dependency Installer" cmd /c "{install_cmd} & pause"')
             ui.messageBox(t("deps_install_started"))
         else:
             if needs_pip_bootstrap:
@@ -169,25 +169,25 @@ def run(context):
             return
 
         # Import these here, after dependencies are checked and potentially installed
-        from ui.handlers import AirfoilSplineCommandCreatedHandler
+        from ui.handlers import AirfoilSplinesCommandCreatedHandler
         from logic import custom_feature
         custom_feature.register(addin_dir)
 
         # 1. Create Command Definition
-        cmd_def = ui.commandDefinitions.itemById('AirfoilSplineCommand')
+        cmd_def = ui.commandDefinitions.itemById('AirfoilSplinesCommand')
         if not cmd_def:
             # Use absolute path for resources to be safe
-            resource_path = os.path.join(addin_dir, 'resources', 'AirfoilSplineCommand')
+            resource_path = os.path.join(addin_dir, 'resources', 'AirfoilSplinesCommand')
             cmd_def = ui.commandDefinitions.addButtonDefinition(
-                'AirfoilSplineCommand',
+                'AirfoilSplinesCommand',
                 t("cmd_button_name"),
                 t("cmd_button_desc"),
                 resource_path
             )
-            toolClip_path = os.path.join(addin_dir, 'resources', 'AirfoilSplineCommand', 'tooltip.png')
+            toolClip_path = os.path.join(addin_dir, 'resources', 'AirfoilSplinesCommand', 'tooltip.png')
             cmd_def.toolClipFilename = toolClip_path
 
-        on_command_created = AirfoilSplineCommandCreatedHandler()
+        on_command_created = AirfoilSplinesCommandCreatedHandler()
         cmd_def.commandCreated.add(on_command_created)
         state.handlers.append(on_command_created)
 
@@ -204,7 +204,7 @@ def run(context):
                     for p_id in panel_ids:
                         panel = tab.toolbarPanels.itemById(p_id)
                         if panel:
-                            existing_control = panel.controls.itemById('AirfoilSplineCommand')
+                            existing_control = panel.controls.itemById('AirfoilSplinesCommand')
                             if not existing_control:
                                 panel.controls.addCommand(cmd_def)
                             break # Found the panel, move to next workspace
@@ -233,12 +233,12 @@ def stop(context):
                     for p_id in panel_ids:
                         panel = tab.toolbarPanels.itemById(p_id)
                         if panel:
-                            control = panel.controls.itemById('AirfoilSplineCommand')
+                            control = panel.controls.itemById('AirfoilSplinesCommand')
                             if control:
                                 control.deleteMe()
 
         # Delete command definition
-        cmd_def = ui.commandDefinitions.itemById('AirfoilSplineCommand')
+        cmd_def = ui.commandDefinitions.itemById('AirfoilSplinesCommand')
         if cmd_def:
             cmd_def.deleteMe()
     except:

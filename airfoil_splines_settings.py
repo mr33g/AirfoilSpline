@@ -1,4 +1,4 @@
-"""AirfoilSpline choices; the numerical library does not depend on these."""
+"""AirfoilSplines choices; the numerical library does not depend on these."""
 DEFAULT_CP_COUNT = 10
 MIN_CP_COUNT = 4
 MAX_CP_COUNT = 19

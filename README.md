@@ -1,12 +1,12 @@
-# AirfoilSpline Add-In for Fusion
+# Airfoil Splines Add-In for Fusion
 
 A Fusion add-in that imports airfoil coordinate data from `.dat` files and fits optimized BÃ©zier curves to it. The generated splines are aligned to the selected sketch line. The result maintains smooth curvature and geometric continuity at the leading edge and can be used immediately for lofts, sweeps, and other CAD operations.
 
-AirfoilSpline is the parametric version of Airfoil Fitter.
+Airfoil Splines brings the shared B-spline fitting library into Fusion with editable parametric features.
 
 ## Parametric Version
 
-Each insertion creates one AirfoilSpline timeline feature containing its output
+Each insertion creates one Airfoil Splines timeline feature containing its output
 sketch and any required construction planes. Right-click it and choose **Edit
 Feature** to change the settings.
 
@@ -20,21 +20,21 @@ With design history disabled, the same fitting controls create an ordinary
 sketch with fixed splines and a trailing-edge closing line when needed.
 
 Previously inserted airfoils remain ordinary sketches. Installing this version
-does not convert them into editable AirfoilSpline timeline features.
+does not convert them into editable Airfoil Splines timeline features.
 
 ## Installation
 
-The AirfoilSpline App Store listing is being prepared. The following link is
-for the legacy Airfoil Fitter release:
+The Airfoil Splines App Store listing is being prepared. The following link is
+for the legacy add-in release:
 https://apps.autodesk.com/FUSION/en/Detail/Index?id=7312110669169312529&appLang=en&os=Win64
 
 ### MSI Installer (Windows)
 
-Uninstall legacy Airfoil Fitter (AF) before installing AirfoilSpline (AS). The
+Uninstall legacy add-in (AF) before installing Airfoil Splines (AS). The
 installer checks for AF and asks you to remove it first because the two add-ins
 cannot be used together.
 
-- **File**: `AirfoilSpline-<version>.msi`
+- **File**: `AirfoilSplines-<version>.msi`
 1. Close Fusion
 2. Download & run the installer
 3. Start Fusion & confirm dependency installation
@@ -43,9 +43,9 @@ cannot be used together.
 ### Manual Installation (Windows)
 
 1. Download or clone this repository
-2. Copy the `AirfoilSpline` folder to your Fusion add-ins directory:
+2. Copy the `AirfoilSplines` folder to your Fusion add-ins directory:
    - **Windows**: `%APPDATA%\Autodesk\Autodesk Fusion\API\AddIns\`
-3. Go to **Utilities â†’ Add-Ins â†’ Scripts and Add-Ins** and enable **AirfoilSpline**
+3. Go to **Utilities â†’ Add-Ins â†’ Scripts and Add-Ins** and enable **Airfoil Splines**
 4. Confirm dependency installation
 5. Restart Fusion
 
@@ -68,7 +68,7 @@ cannot be used together.
 
 7. **Curvature Comb**: analyze the airfoil's curvature in the preview.
 8. **Show Input Data**: overlay the input coordinates for comparison.
-9. **Click OK** to create one AirfoilSpline timeline feature, with a new output sketch in the chord line's component.
+9. **Click OK** to create one Airfoil Splines timeline feature, with a new output sketch in the chord line's component.
 10. **Edit Feature** from its timeline context menu to revise the fit later. Existing downstream references are retained where Fusion can resolve them.
 
 ## Features
@@ -158,8 +158,8 @@ The add-in will offer to install numpy and scipy automatically. If this fails:
 
 ## Separate application
 
-AirfoilSpline has its own loader, bundle, command IDs, saved-feature identifiers,
-and installer upgrade identity. It does not replace Airfoil Fitter or adopt its
+Airfoil Splines has its own loader, bundle, command IDs, saved-feature identifiers,
+and installer upgrade identity. It does not replace the legacy add-in or adopt its
 existing parametric features. Those features still require the original add-in.
 
 ## License
@@ -173,7 +173,7 @@ Michael Reeg
 ## Changelog
 
 ### Unreleased â€” parametric prototype
-- AirfoilSpline timeline features with embedded source data and editable fitting settings.
+- Airfoil Splines timeline features with embedded source data and editable fitting settings.
 - Preserve spline entities during normal edits to retain downstream references.
 - Support face sketches and moved component occurrences; graphics-only previews.
 - Remove the adjustable DXF workflow and the ezdxf dependency.
@@ -243,14 +243,14 @@ Michael Reeg
 ## Shared fitting library
 
 The shared headless library is being extracted in
-AirfoilFit (the sibling local project).
+airfoil-splines-core (the sibling local project).
 This initial repository split preserves the tested local fitting implementation.
 Consumer migration and pinned wheel packaging follow numerical parity checks;
 see the library migration document for the four planned consumers.
 
 ## Local shared core
 
-The fitting implementation lives in the sibling `AirfoilFit` project. Run
+The fitting implementation lives in the sibling `airfoil-splines-core` project. Run
 `python setup/prepare_core.py` to bundle it into the ignored `_vendor` directory
 for Fusion. The installer build runs this step automatically. For offline tests,
-set `PYTHONPATH` to `../AirfoilFit/src` or install that local package first.
+set `PYTHONPATH` to `../airfoil-splines-core/src` or install that local package first.

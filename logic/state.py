@@ -1,4 +1,4 @@
-# Global state for the AirfoilSpline add-in
+# Global state for the AirfoilSplines add-in
 handlers = []
 needs_refit = True
 fit_cache = {}

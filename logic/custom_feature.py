@@ -1,4 +1,4 @@
-"""Experimental parametric AirfoilSpline feature (Fusion Custom Features preview)."""
+"""Experimental parametric AirfoilSplines feature (Fusion Custom Features preview)."""
 import copy
 import os
 import traceback
@@ -10,10 +10,10 @@ from logic import feature_recipe
 from logic.airfoil_frame import chord_frame, sketch_points
 
 
-# AirfoilSpline owns its feature data independently of the legacy add-in.
+# AirfoilSplines owns its feature data independently of the legacy add-in.
 GROUP = 'AirfoilSpline.CustomCommand.v1'
 DEFINITION_ID = 'mr33g.AirfoilSpline.Parametric.v1'
-EDIT_ID = 'AirfoilSplineEditFeature'
+EDIT_ID = 'AirfoilSplinesEditFeature'
 _definition = None
 _handlers = []
 _sessions = []
@@ -31,11 +31,11 @@ def register(addin_dir):
     global _definition, _selection_highlight, _deferred
     ui = adsk.core.Application.get().userInterface
     _definition = adsk.fusion.CustomFeatureDefinition.create(
-        DEFINITION_ID, 'AirfoilSpline', os.path.join(addin_dir, 'resources', 'AirfoilSplineFeature'))
+        DEFINITION_ID, 'Airfoil Splines', os.path.join(addin_dir, 'resources', 'AirfoilSplinesFeature'))
     edit = ui.commandDefinitions.itemById(EDIT_ID)
     if not edit:
-        edit = ui.commandDefinitions.addButtonDefinition(EDIT_ID, 'Edit AirfoilSpline', 'Edit fitted airfoil')
-    edit.resourceFolder = os.path.join(addin_dir, 'resources', 'AirfoilSplineFeature')
+        edit = ui.commandDefinitions.addButtonDefinition(EDIT_ID, 'Edit Airfoil Splines', 'Edit fitted airfoil')
+    edit.resourceFolder = os.path.join(addin_dir, 'resources', 'AirfoilSplinesFeature')
     # Fusion validates the ID immediately; the command must already exist.
     _definition.editCommandId = EDIT_ID
     _attach(edit.commandCreated, EditCreated(), _handlers)
@@ -83,19 +83,19 @@ def _group_start(sketch, supports):
     timeline = sketch.timelineObject.parentTimeline
     start = members[0].timelineObject.index
     if start < 0:
-        raise RuntimeError('Cannot verify the AirfoilSpline support group position.')
+        raise RuntimeError('Cannot verify the AirfoilSplines support group position.')
     for offset, member in enumerate(members):
         item = member.timelineObject
         if (item.parentTimeline != timeline or item.index != start + offset
                 or _native(timeline.item(start + offset).entity) != member):
-            raise RuntimeError('AirfoilSpline supports and output are not contiguous; '
+            raise RuntimeError('AirfoilSplines supports and output are not contiguous; '
                                'creation cancelled to protect unrelated timeline operations.')
     return members[0]
 
 
 def wrap(sketch, line, inputs, cache, rotation, flip, *, supports=()):
     if _definition is None:
-        raise RuntimeError('AirfoilSpline custom feature definition is not registered.')
+        raise RuntimeError('AirfoilSplines custom feature definition is not registered.')
     path = inputs.itemById('file_path').value
     recipe = dict(feature_recipe.read_source(path), schema=feature_recipe.SCHEMA,
                   rotation=int(rotation), flip=bool(flip))
@@ -119,12 +119,12 @@ def wrap(sketch, line, inputs, cache, rotation, flip, *, supports=()):
         raise RuntimeError('Fusion could not group the airfoil output into one timeline feature.')
     feature = collection.add(data)
     if not feature:
-        raise RuntimeError('Fusion could not create the AirfoilSpline custom feature.')
+        raise RuntimeError('Fusion could not create the AirfoilSplines custom feature.')
     expected = [_native(entity) for entity in supports] + [native]
     actual = [_native(entity) for entity in feature.features]
     if len(actual) != len(expected) or any(entity not in expected for entity in actual):
-        raise RuntimeError('Fusion grouped unexpected features; AirfoilSpline creation cancelled.')
-    feature.name = 'AirfoilSpline - ' + os.path.splitext(recipe['filename'])[0]
+        raise RuntimeError('Fusion grouped unexpected features; AirfoilSplines creation cancelled.')
+    feature.name = 'Airfoil Splines - ' + os.path.splitext(recipe['filename'])[0]
     _native(feature).attributes.add(GROUP, 'recipe', feature_recipe.encode(recipe))
     return feature
 
@@ -132,7 +132,7 @@ def wrap(sketch, line, inputs, cache, rotation, flip, *, supports=()):
 def read_recipe(feature):
     attribute = _native(feature).attributes.itemByName(GROUP, 'recipe')
     if not attribute:
-        raise RuntimeError('This feature has no embedded AirfoilSpline recipe.')
+        raise RuntimeError('This feature has no embedded AirfoilSplines recipe.')
     return feature_recipe.decode(attribute.value)
 
 
@@ -145,7 +145,7 @@ def output_sketch(feature):
         sketch = adsk.fusion.Sketch.cast(entity)
         if sketch and _role(sketch) == 'output':
             return sketch.nativeObject or sketch
-    raise RuntimeError('The AirfoilSpline output sketch is missing.')
+    raise RuntimeError('The AirfoilSplines output sketch is missing.')
 
 
 def _role(entity):
@@ -198,7 +198,7 @@ class SelectionHighlight(adsk.core.ActiveSelectionEventHandler):
                         graphic.depthPriority = 100
         except Exception:
             self.clear()
-            adsk.core.Application.get().log('AirfoilSpline selection highlight failed: ' + traceback.format_exc())
+            adsk.core.Application.get().log('AirfoilSplines selection highlight failed: ' + traceback.format_exc())
         finally:
             self.updating = False
 
@@ -248,7 +248,7 @@ def apply_edit(feature, original_recipe, original_values, recipe, values, te_exp
         elif values[name] != original_values[name]:
             parameter.value = values[name]
     if recipe['filename'] != original_recipe['filename']:
-        feature.name = 'AirfoilSpline - ' + os.path.splitext(recipe['filename'])[0]
+        feature.name = 'Airfoil Splines - ' + os.path.splitext(recipe['filename'])[0]
 
 
 def update(feature, recipe=None, values=None, *, apply=True):
@@ -258,7 +258,7 @@ def update(feature, recipe=None, values=None, *, apply=True):
     dependency = feature.dependencies.itemById('chord')
     line = adsk.fusion.SketchLine.cast(dependency.entity) if dependency else None
     if not line:
-        raise RuntimeError('The AirfoilSpline chord reference is missing.')
+        raise RuntimeError('The AirfoilSplines chord reference is missing.')
     frame, length = chord_frame(line, recipe['rotation'], recipe['flip'])
     fitted = feature_recipe.fit(recipe, values, length)
     sketch = output_sketch(feature)
@@ -324,7 +324,7 @@ def update(feature, recipe=None, values=None, *, apply=True):
                 if not spline.replaceGeometry(old):
                     raise RuntimeError('Fusion rejected spline rollback.')
             except Exception:
-                adsk.core.Application.get().log('AirfoilSpline rollback failed: ' + traceback.format_exc())
+                adsk.core.Application.get().log('AirfoilSplines rollback failed: ' + traceback.format_exc())
         try:
             if added_connector and not added_connector.deleteMe():
                 raise RuntimeError('Fusion rejected connector rollback.')
@@ -333,7 +333,7 @@ def update(feature, recipe=None, values=None, *, apply=True):
                     if not point.move(point.geometry.vectorTo(original)):
                         raise RuntimeError('Fusion rejected connector endpoint rollback.')
         except Exception:
-            adsk.core.Application.get().log('AirfoilSpline rollback failed: ' + traceback.format_exc())
+            adsk.core.Application.get().log('AirfoilSplines rollback failed: ' + traceback.format_exc())
         raise
     return changed
 
@@ -353,7 +353,7 @@ class Compute(adsk.fusion.CustomFeatureEventHandler):
             else:
                 update(feature)
         except Exception:
-            adsk.core.Application.get().log('AirfoilSpline recompute failed: ' + traceback.format_exc())
+            adsk.core.Application.get().log('AirfoilSplines recompute failed: ' + traceback.format_exc())
             args.computeStatus.statusMessages.addError('DRPOINT_COMPUTE_FAILED', '')
         finally:
             _busy.discard(key)
@@ -365,13 +365,13 @@ class EditCreated(adsk.core.CommandCreatedEventHandler):
             ui = adsk.core.Application.get().userInterface
             feature = adsk.fusion.CustomFeature.cast(ui.activeSelections.item(0).entity)
             if not feature or feature.definition.id != DEFINITION_ID:
-                raise RuntimeError('Select an AirfoilSpline custom feature to edit.')
+                raise RuntimeError('Select an AirfoilSplines custom feature to edit.')
             session = EditSession(feature, args.command)
             session.connect()
             _sessions.append(session)
         except Exception:
             app = adsk.core.Application.get()
-            app.log('AirfoilSpline edit failed: ' + traceback.format_exc())
+            app.log('AirfoilSplines edit failed: ' + traceback.format_exc())
             app.userInterface.messageBox('Could not open the airfoil feature. See Text Commands for details.')
 
 
@@ -403,12 +403,12 @@ class EditSession:
 
     def initialize(self):
         from logic import state
-        from ui.handlers import AirfoilSplineCommandInputChangedHandler, update_cp_count_labels
+        from ui.handlers import AirfoilSplinesCommandInputChangedHandler, update_cp_count_labels
 
         inputs = self.command.commandInputs
         dependency = self.feature.dependencies.itemById('chord')
         if not dependency or not dependency.entity:
-            raise RuntimeError('The AirfoilSpline chord reference is missing.')
+            raise RuntimeError('The AirfoilSplines chord reference is missing.')
         inputs.itemById('chord_line').addSelection(dependency.entity)
         inputs.itemById('file_path').value = self.path
         inputs.itemById('select_file').text = os.path.splitext(self.recipe['filename'])[0]
@@ -425,7 +425,7 @@ class EditSession:
         items.item(int(self.values['continuity']) - 1).isSelected = True
         update_cp_count_labels(inputs)
         # Reuse visibility and manipulator setup without initiating a file change.
-        shared = AirfoilSplineCommandInputChangedHandler()
+        shared = AirfoilSplinesCommandInputChangedHandler()
         shared.handle(None, inputs, 'chord_line')
         self.lock_inputs()
         self.ready = True
@@ -436,11 +436,11 @@ class EditSession:
         inputs.itemById('rotate_airfoil').isEnabled = False
 
     def connect(self):
-        from ui.handlers import AirfoilSplineCommandInputChangedHandler, update_cp_count_labels
+        from ui.handlers import AirfoilSplinesCommandInputChangedHandler, update_cp_count_labels
         from logic.fitter import run_fitter
         from logic import state
         session = self
-        shared_changed = AirfoilSplineCommandInputChangedHandler(preserve_fit_settings=True)
+        shared_changed = AirfoilSplinesCommandInputChangedHandler(preserve_fit_settings=True)
 
         class Activate(adsk.core.CommandEventHandler):
             def notify(self, args):
@@ -452,7 +452,7 @@ class EditSession:
                             session.initialize()
                         session.command.doExecutePreview()
                     except Exception:
-                        adsk.core.Application.get().log('AirfoilSpline edit initialization failed: ' + traceback.format_exc())
+                        adsk.core.Application.get().log('AirfoilSplines edit initialization failed: ' + traceback.format_exc())
                         session.restore()
                         raise
 
@@ -498,7 +498,7 @@ class EditSession:
                     apply_edit(session.feature, session.recipe, session.values, recipe, values,
                                inputs.itemById('te_thickness').expression)
                 except Exception as exc:
-                    adsk.core.Application.get().log('AirfoilSpline edit failed: ' + traceback.format_exc())
+                    adsk.core.Application.get().log('AirfoilSplines edit failed: ' + traceback.format_exc())
                     args.executeFailed = True
                     args.executeFailedMessage = str(exc)
                 finally:

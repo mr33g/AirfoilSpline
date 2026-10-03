@@ -3,14 +3,14 @@
                     AppVersion="1.0.0"
                     Author="Michael Reeg"
                     ProductCode="{04a83e63-f403-446a-9869-29a5e30cf272}"
-                    Name="AirfoilSpline"
-                    Description="AirfoilSpline parametric airfoil add-in for Fusion"
+                    Name="Airfoil Splines"
+                    Description="Airfoil Splines parametric airfoil add-in for Fusion"
                     Icon="./Contents/img/favicon.ico">
     <Components>
         <RuntimeRequirements OS="Win64" Platform="Fusion360" />
-        <ComponentEntry AppName="AirfoilSpline"
-                        ModuleName="./Contents/AirfoilSpline.manifest"
-                        AppDescription="AirfoilSpline parametric airfoil add-in for Fusion"
+        <ComponentEntry AppName="Airfoil Splines"
+                        ModuleName="./Contents/AirfoilSplines.manifest"
+                        AppDescription="Airfoil Splines parametric airfoil add-in for Fusion"
                         Type="Component"
                         RunOnStartup="true" />
     </Components>

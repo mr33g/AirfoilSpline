@@ -5,7 +5,7 @@ import os
 from ui.dialog import create_ui_inputs
 from logic import state
 from logic.fitter import run_fitter
-import airfoil_spline_settings as config
+import airfoil_splines_settings as config
 from utils.i18n import t
 
 def _set_selected_file_button_text(inputs, file_path: str) -> None:
@@ -85,7 +85,7 @@ def reset_fitter_settings_to_defaults(inputs, resetAll=False):
     except Exception as e:
         pass
 
-class AirfoilSplineCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
+class AirfoilSplinesCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
@@ -94,22 +94,22 @@ class AirfoilSplineCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             cmd = event_args.command
             cmd.setDialogSize(300, 0)
 
-            from AirfoilSpline import check_for_updates
+            from AirfoilSplines import check_for_updates
             check_for_updates(adsk.core.Application.get().userInterface)
 
-            on_execute = AirfoilSplineCommandExecuteHandler()
+            on_execute = AirfoilSplinesCommandExecuteHandler()
             cmd.execute.add(on_execute)
             state.handlers.append(on_execute)
 
-            on_input_changed = AirfoilSplineCommandInputChangedHandler()
+            on_input_changed = AirfoilSplinesCommandInputChangedHandler()
             cmd.inputChanged.add(on_input_changed)
             state.handlers.append(on_input_changed)
 
-            on_execute_preview = AirfoilSplineCommandExecutePreviewHandler()
+            on_execute_preview = AirfoilSplinesCommandExecutePreviewHandler()
             cmd.executePreview.add(on_execute_preview)
             state.handlers.append(on_execute_preview)
 
-            on_destroy = AirfoilSplineCommandDestroyedHandler()
+            on_destroy = AirfoilSplinesCommandDestroyedHandler()
             on_destroy.command_handlers = [on_execute, on_input_changed, on_execute_preview, on_destroy]
             cmd.destroy.add(on_destroy)
             state.handlers.append(on_destroy)
@@ -120,7 +120,7 @@ class AirfoilSplineCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             app = adsk.core.Application.get()
             app.userInterface.messageBox(t("command_created_failed", error=traceback.format_exc()))
 
-class AirfoilSplineCommandExecuteHandler(adsk.core.CommandEventHandler):
+class AirfoilSplinesCommandExecuteHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
@@ -128,14 +128,14 @@ class AirfoilSplineCommandExecuteHandler(adsk.core.CommandEventHandler):
             event_args = adsk.core.CommandEventArgs.cast(args)
             if not run_fitter(event_args.command.commandInputs, False):
                 event_args.executeFailed = True
-                event_args.executeFailedMessage = 'AirfoilSpline creation failed. See Text Commands for details.'
+                event_args.executeFailedMessage = 'AirfoilSplines creation failed. See Text Commands for details.'
         except Exception as e:
             app = adsk.core.Application.get()
             args.executeFailed = True
             args.executeFailedMessage = str(e)
             app.userInterface.messageBox(t("execution_error", error=traceback.format_exc()))
 
-class AirfoilSplineCommandInputChangedHandler(adsk.core.InputChangedEventHandler):
+class AirfoilSplinesCommandInputChangedHandler(adsk.core.InputChangedEventHandler):
     def __init__(self, preserve_fit_settings=False):
         super().__init__()
         self.preserve_fit_settings = preserve_fit_settings
@@ -312,7 +312,7 @@ class AirfoilSplineCommandInputChangedHandler(adsk.core.InputChangedEventHandler
         except Exception as e:
             pass
 
-class AirfoilSplineCommandExecutePreviewHandler(adsk.core.CommandEventHandler):
+class AirfoilSplinesCommandExecutePreviewHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):
@@ -324,7 +324,7 @@ class AirfoilSplineCommandExecutePreviewHandler(adsk.core.CommandEventHandler):
         except Exception as e:
             pass
 
-class AirfoilSplineCommandDestroyedHandler(adsk.core.CommandEventHandler):
+class AirfoilSplinesCommandDestroyedHandler(adsk.core.CommandEventHandler):
     def __init__(self):
         super().__init__()
     def notify(self, args):

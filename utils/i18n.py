@@ -7,7 +7,7 @@ _LANG_CACHE = None
 STRINGS = {
     "en": {
         "deps_missing_msg": (
-            "AirfoilSpline requires external libraries (numpy, scipy).\n\n"
+            "Airfoil Splines requires external libraries (numpy, scipy).\n\n"
             "They were not found in the 'lib' folder.\n"
             "Would you like to attempt a local installation into the add-in folder?"
         ),
@@ -25,7 +25,7 @@ STRINGS = {
         "cmd_button_desc": "Fit a spline to an airfoil .dat file in Selig or Lednicer format",
         "failed_to_start": "Failed to start:\n{error}",
         "update_available": (
-            "A newer version of AirfoilSpline is available.\n\n"
+            "A newer version of Airfoil Splines is available.\n\n"
             "Installed version: {local_version}\n"
             "Latest version: {remote_version}\n\n"
             "Download it from the Autodesk App Store:\n{app_store_url}"
@@ -66,7 +66,7 @@ STRINGS = {
     },
     "de": {
         "deps_missing_msg": (
-            "AirfoilSpline benoetigt externe Bibliotheken (numpy, scipy).\n\n"
+            "Airfoil Splines benoetigt externe Bibliotheken (numpy, scipy).\n\n"
             "Diese wurden im Ordner 'lib' nicht gefunden.\n"
             "Moechten Sie eine lokale Installation im Add-in-Ordner versuchen?"
         ),
@@ -84,7 +84,7 @@ STRINGS = {
         "cmd_button_desc": "Spline an eine .dat-Profildatei im Selig- oder Lednicer-Format anpassen",
         "failed_to_start": "Start fehlgeschlagen:\n{error}",
         "update_available": (
-            "Eine neuere Version von AirfoilSpline ist verfuegbar.\n\n"
+            "Eine neuere Version von Airfoil Splines ist verfuegbar.\n\n"
             "Installierte Version: {local_version}\n"
             "Neueste Version: {remote_version}\n\n"
             "Download im Autodesk App Store:\n{app_store_url}"
@@ -125,7 +125,7 @@ STRINGS = {
     },
     "it": {
         "deps_missing_msg": (
-            "AirfoilSpline richiede librerie esterne (numpy, scipy).\n\n"
+            "Airfoil Splines richiede librerie esterne (numpy, scipy).\n\n"
             "Non sono presenti nella cartella 'lib'.\n"
             "Vuoi provare a installarle automaticamente nella cartella dell'add-in?"
         ),
@@ -143,7 +143,7 @@ STRINGS = {
         "cmd_button_desc": "Adatta una spline a un profilo .dat in formato Selig o Lednicer",
         "failed_to_start": "Avvio non riuscito:\n{error}",
         "update_available": (
-            "E disponibile una versione piu recente di AirfoilSpline.\n\n"
+            "E disponibile una versione piu recente di Airfoil Splines.\n\n"
             "Versione installata: {local_version}\n"
             "Versione piu recente: {remote_version}\n\n"
             "Scaricala da Autodesk App Store:\n{app_store_url}"

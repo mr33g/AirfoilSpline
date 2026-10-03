@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 from scipy import interpolate, special  # Load extensions before temporary sys.modules patches.
-from airfoil_fit import bspline_helper
+from airfoil_splines_core import bspline_helper
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -44,7 +44,7 @@ class RegistrationTests(unittest.TestCase):
                 commands = {}
                 edit = NS(commandCreated=Mock())
                 if existing:
-                    commands['AirfoilSplineEditFeature'] = edit
+                    commands['AirfoilSplinesEditFeature'] = edit
 
                 def add_command(command_id, *args):
                     commands[command_id] = edit
@@ -192,7 +192,7 @@ class RecipeTests(unittest.TestCase):
             np.testing.assert_array_equal(self.recipe.fit(recipe, values, 10)[0], geometry[0])
 
     def test_failed_fit_is_rejected_and_not_cached(self):
-        from airfoil_fit import FitResult
+        from airfoil_splines_core import FitResult
         self.recipe._fit_cached.cache_clear()
         recipe = dict(dat=self.dat, schema=1)
         failed = FitResult(False, 2, None, 'Iteration limit')
@@ -276,7 +276,7 @@ class PreviewTests(unittest.TestCase):
             'adsk': adsk, 'adsk.core': adsk.core, 'adsk.fusion': adsk.fusion,
             'logic': logic, 'logic.fitter': NS(run_fitter=Mock()),
             'ui.dialog': NS(create_ui_inputs=Mock())})
-        module.AirfoilSplineCommandInputChangedHandler(preserve_fit_settings=True).handle(
+        module.AirfoilSplinesCommandInputChangedHandler(preserve_fit_settings=True).handle(
             None, inputs, 'select_file')
         self.assertEqual(controls['file_path'].value, 'replacement.dat')
         self.assertEqual(controls['te_thickness'].value, 0.04)
@@ -550,7 +550,7 @@ class RecomputeTests(unittest.TestCase):
         self.module.update = Mock()
         with patch.dict(sys.modules, {
                 'logic': logic, 'logic.fitter': NS(run_fitter=preview),
-                'ui.handlers': NS(AirfoilSplineCommandInputChangedHandler=lambda **kwargs: shared,
+                'ui.handlers': NS(AirfoilSplinesCommandInputChangedHandler=lambda **kwargs: shared,
                                   update_cp_count_labels=Mock())}):
             session.connect()
             command.activate.add.call_args.args[0].notify(NS(command=command))

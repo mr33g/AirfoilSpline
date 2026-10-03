@@ -34,15 +34,15 @@ class TimelineInsertion:
             # Never move existing history or bypass a dependency restriction.
             if actual < target or not item.canReorder(target) or not item.reorder(target):
                 raise TimelineInsertionError(
-                    f'Cannot insert AirfoilSpline {stage} at timeline position {target} '
+                    f'Cannot insert AirfoilSplines {stage} at timeline position {target} '
                     f'(Fusion created it at {actual}). Creation will be cancelled; '
                     'check whether its references require a later timeline position.')
             if item.index != target:
                 raise TimelineInsertionError(
-                    f'Fusion did not place the AirfoilSpline {stage} at the requested '
+                    f'Fusion did not place the AirfoilSplines {stage} at the requested '
                     f'timeline position {target}; actual position is {item.index}.')
         if self.timeline.markerPosition != target + 1:
             if not item.rollTo(False) or self.timeline.markerPosition != target + 1:
-                raise TimelineInsertionError('Cannot advance the timeline after the new AirfoilSpline ' + stage)
+                raise TimelineInsertionError('Cannot advance the timeline after the new AirfoilSplines ' + stage)
         self.position = target + 1
         return target

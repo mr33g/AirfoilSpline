@@ -4,12 +4,12 @@ import math
 from pathlib import Path
 from functools import lru_cache
 from copy import deepcopy
-import airfoil_spline_settings as config
-from airfoil_fit import bspline_helper
+import airfoil_splines_settings as config
+from airfoil_splines_core import bspline_helper
 
-from airfoil_fit.airfoil_processor import AirfoilProcessor
-from airfoil_fit.bspline_processor import BSplineProcessor
-from airfoil_fit.bspline_helper import apply_te_thickness_to_reference
+from airfoil_splines_core.airfoil_processor import AirfoilProcessor
+from airfoil_splines_core.bspline_processor import BSplineProcessor
+from airfoil_splines_core.bspline_helper import apply_te_thickness_to_reference
 
 
 SCHEMA = 1
@@ -34,7 +34,7 @@ def encode(recipe):
 def decode(text):
     recipe = json.loads(text)
     if recipe.get('schema') != SCHEMA or not isinstance(recipe.get('dat'), str):
-        raise ValueError('Unsupported or missing AirfoilSpline feature data.')
+        raise ValueError('Unsupported or missing AirfoilSplines feature data.')
     return recipe
 
 
@@ -53,7 +53,7 @@ def validate(values, chord_length):
 
 
 class AirfoilFitError(RuntimeError):
-    """The requested fit failed; AirfoilSpline does not accept weaker continuity."""
+    """The requested fit failed; AirfoilSplines does not accept weaker continuity."""
 
 
 def fit_data(recipe, values, chord_length):
@@ -87,7 +87,7 @@ def _fit_cached(dat, te, smoothness, upper_count, lower_count, continuity):
     processor = _load_source(dat)
     upper, lower = apply_te_thickness_to_reference(
         processor.upper_data, processor.lower_data, te)
-    # Choosing a single span is an AirfoilSpline policy, expressed numerically.
+    # Choosing a single span is an AirfoilSplines policy, expressed numerically.
     bspline = BSplineProcessor(degree=(upper_count - 1, lower_count - 1))
     result = bspline.fit_bspline(
         upper, lower, num_control_points=(upper_count, lower_count),

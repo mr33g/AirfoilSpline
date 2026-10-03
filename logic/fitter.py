@@ -3,12 +3,12 @@ import os
 import traceback
 import numpy as np
 from logic import state
-import airfoil_spline_settings as config
+import airfoil_splines_settings as config
 from utils.fusion_geometry_helper import create_fusion_spline
 from logic.airfoil_frame import chord_frame
 from logic import custom_feature, feature_recipe
 from logic.timeline_insertion import TimelineInsertion, TimelineInsertionError
-from airfoil_fit import bspline_helper
+from airfoil_splines_core import bspline_helper
 from utils.sketch_plane_helper import AirfoilPlaneError, resolve_airfoil_plane, add_airfoil_sketch
 from logic.preview_renderer import render_preview
 from utils.i18n import t
@@ -181,11 +181,11 @@ def run_fitter(inputs, is_preview, initialize_te=True):
             app.userInterface.messageBox(str(exc))
         return False
     except TimelineInsertionError as exc:
-        app.log(f'AirfoilSpline insertion failed: {traceback.format_exc()}')
+        app.log(f'AirfoilSplines insertion failed: {traceback.format_exc()}')
         app.userInterface.messageBox(str(exc))
         return False  # Execute handler sets executeFailed to abort the transaction.
     except AirfoilPlaneError as exc:
-        app.log(f"AirfoilSpline plane creation failed: {traceback.format_exc()}")
+        app.log(f"AirfoilSplines plane creation failed: {traceback.format_exc()}")
         app.userInterface.messageBox(t("failed_create_airfoil_plane", error=str(exc)))
         return False
     except:

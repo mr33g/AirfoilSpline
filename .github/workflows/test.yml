@@ -1,4 +1,4 @@
-name: Test AirfoilSpline
+name: Test AirfoilSplines
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
@@ -8,22 +8,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: AirfoilSpline
+          path: airfoil-splines-for-fusion
       - uses: actions/checkout@v4
         with:
-          repository: mr33g/AirfoilFit
-          ref: 7958b391b994f6b4f1210665e3e6e5e38671237c
+          repository: mr33g/airfoil-splines-core
+          ref: main
           token: ${{ secrets.AIRFOILFIT_READ_TOKEN }}
           persist-credentials: false
-          path: AirfoilFit
+          path: airfoil-splines-core
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - run: python -m pip install -r AirfoilSpline/requirements.txt
+      - run: python -m pip install -r airfoil-splines-for-fusion/requirements.txt
       - name: Bundle shared core
-        run: python AirfoilSpline/setup/prepare_core.py
+        run: python airfoil-splines-for-fusion/setup/prepare_core.py
       - name: Run offline add-in tests
-        working-directory: AirfoilSpline
+        working-directory: airfoil-splines-for-fusion
         env:
           PYTHONPATH: _vendor
         run: python -m unittest discover -s tests -v

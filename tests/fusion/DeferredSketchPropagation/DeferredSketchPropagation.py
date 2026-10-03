@@ -1,4 +1,4 @@
-"""Standalone Fusion reproduction; imports no AirfoilFitter code.
+"""Standalone Fusion reproduction; imports no AirfoilSplines code.
 
 Creates a NEW unsaved document. No Compute All, curve recreation, or timeline
 movement occurs inside compute callbacks. Stop writes the final JSON report.
@@ -477,7 +477,7 @@ def run(context):
         _report = {'fusionVersion': app.version, 'script': str(Path(__file__).resolve()),
                    'probeRevision': 2,
                    'experiment': 'defer callback geometry to ordinary command; no Compute All',
-                   'note': 'No AirfoilFitter imports. Units cm. Ordinary control changes only on its own command.',
+                   'note': 'No AirfoilSplines imports. Units cm. Ordinary control changes only on its own command.',
                    'events': []}
         existing = adsk.fusion.Design.cast(app.activeProduct)
         if recover_existing(existing):
